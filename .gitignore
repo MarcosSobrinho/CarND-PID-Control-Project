@@ -1,0 +1,9 @@
+.vscode
+build
+tags
+.editorconfig
+CODEOWNERS
+LICENSE
+install-mac.sh
+install-ubuntu.sh
+set_git.sh
