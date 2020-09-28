@@ -33,12 +33,13 @@ string hasData(string s) {
 int main() {
   uWS::Hub h;
 
-  PID pid;
+  //PID pid;
   /**
    * TODO: Initialize the pid variable.
    */
-
-  h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
+	double prev_cte = 0.0;
+  	double sum_cte = 0.0;
+  h.onMessage([&prev_cte, &sum_cte](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -53,10 +54,16 @@ int main() {
 
         if (event == "telemetry") {
           // j[1] is the data JSON object
-          double cte = std::stod(j[1]["cte"].get<string>());
-          double speed = std::stod(j[1]["speed"].get<string>());
-          double angle = std::stod(j[1]["steering_angle"].get<string>());
-          double steer_value;
+          const double cte = std::stod(j[1]["cte"].get<string>());
+          //double speed = std::stod(j[1]["speed"].get<string>());
+          //double angle = std::stod(j[1]["steering_angle"].get<string>());
+          
+          const double diff_cte = cte - prev_cte;
+          prev_cte = cte;
+          sum_cte += cte;
+          
+          const double steer_value = -0.07*cte - 3.0*diff_cte - 0.006*sum_cte;
+          
           /**
            * TODO: Calculate steering value here, remember the steering value is
            *   [-1, 1].
